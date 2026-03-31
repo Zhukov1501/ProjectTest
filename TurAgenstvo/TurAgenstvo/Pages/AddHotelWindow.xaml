@@ -1,0 +1,94 @@
+<Window x:Class="TurAgenstvo.Pages.AddHotelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Новый отель"
+        Width="480"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#ECF0F1">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Text="ДОБАВИТЬ ОТЕЛЬ"
+                   FontSize="18" FontWeight="Bold" Foreground="#2C3E50"
+                   Grid.Row="0" Grid.ColumnSpan="2"
+                   Margin="0,0,0,15"/>
+
+        <!-- Название -->
+        <TextBlock Text="Название отеля *" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,8"/>
+        <TextBox x:Name="HotelNameBox" Grid.Row="1" Grid.Column="1" Height="30" Padding="5,3" Margin="0,0,0,8"/>
+
+        <!-- Страна -->
+        <TextBlock Text="Страна *" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,8"/>
+        <ComboBox x:Name="CountryComboBox" Grid.Row="2" Grid.Column="1" Height="30" Margin="0,0,0,8"
+                  DisplayMemberPath="CountryName" SelectedValuePath="CountryId"
+                  SelectionChanged="CountryComboBox_SelectionChanged"/>
+
+        <!-- Город -->
+        <TextBlock Text="Город *" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,8"/>
+        <ComboBox x:Name="CityComboBox" Grid.Row="3" Grid.Column="1" Height="30" Margin="0,0,0,8"
+                  DisplayMemberPath="CityName" SelectedValuePath="CityId"/>
+
+        <!-- Звезды -->
+        <TextBlock Text="Звезд" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,8"/>
+        <ComboBox x:Name="StarsComboBox" Grid.Row="4" Grid.Column="1" Height="30" Margin="0,0,0,8">
+            <ComboBoxItem Content="1"/>
+            <ComboBoxItem Content="2"/>
+            <ComboBoxItem Content="3" IsSelected="True"/>
+            <ComboBoxItem Content="4"/>
+            <ComboBoxItem Content="5"/>
+        </ComboBox>
+
+        <!-- Питание -->
+        <TextBlock Text="Питание" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,8"/>
+        <ComboBox x:Name="MealTypeComboBox" Grid.Row="5" Grid.Column="1" Height="30" Margin="0,0,0,8"
+                  DisplayMemberPath="MealName" SelectedValuePath="MealTypeId"/>
+
+        <!-- Адрес -->
+        <TextBlock Text="Адрес" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,8"/>
+        <TextBox x:Name="AddressBox" Grid.Row="6" Grid.Column="1" Height="30" Padding="5,3" Margin="0,0,0,8"/>
+
+        <!-- Телефон -->
+        <TextBlock Text="Телефон" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,8"/>
+        <TextBox x:Name="PhoneBox" Grid.Row="7" Grid.Column="1" Height="30" Padding="5,3" Margin="0,0,0,8"/>
+
+        <!-- Email -->
+        <TextBlock Text="Email" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,8"/>
+        <TextBox x:Name="EmailBox" Grid.Row="8" Grid.Column="1" Height="30" Padding="5,3" Margin="0,0,0,8"/>
+
+        <!-- Описание -->
+        <TextBlock Text="Описание" Grid.Row="9" Grid.Column="0" VerticalAlignment="Top" Margin="0,4,0,8"/>
+        <TextBox x:Name="DescriptionBox" Grid.Row="9" Grid.Column="1" Height="60" Padding="5,3" Margin="0,0,0,15"
+                 TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+
+        <!-- Кнопки -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                    Grid.Row="10" Grid.ColumnSpan="2">
+            <Button Content="Отмена" Width="90" Height="32" Margin="0,0,10,0"
+                    Background="#95A5A6" Foreground="White" BorderThickness="0" Cursor="Hand"
+                    Click="CancelButton_Click"/>
+            <Button Content="Сохранить" Width="100" Height="32"
+                    Background="#27AE60" Foreground="White" BorderThickness="0" Cursor="Hand"
+                    Click="SaveButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

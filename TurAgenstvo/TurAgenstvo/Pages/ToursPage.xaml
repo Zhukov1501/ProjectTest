@@ -1,0 +1,142 @@
+<Page x:Class="TurAgenstvo.Pages.ToursPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Туры"
+      Background="#ECF0F1"
+      Loaded="Page_Loaded">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Text="УПРАВЛЕНИЕ ТУРАМИ" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Foreground="#2C3E50"
+                   Grid.Row="0"
+                   Margin="0,0,0,20"/>
+
+        <!-- Панель кнопок -->
+        <StackPanel Orientation="Horizontal" 
+                    Grid.Row="1" 
+                    Margin="0,0,0,20">
+
+            <Button Content="На главную" 
+                    Width="120" 
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BackButton_Click"/>
+
+            <Button Content="Новый тур" 
+                    Width="120" 
+                    Height="35"
+                    Background="#27AE60"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="AddTourButton_Click"/>
+
+            <Button Content="Управление отелями" 
+                    Width="150" 
+                    Height="35"
+                    Margin="10,0,0,0"
+                    Background="#3498DB"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="ManageHotelsButton_Click"/>
+        </StackPanel>
+
+        <!-- Таблица туров -->
+        <DataGrid x:Name="ToursGrid" 
+                  Grid.Row="2"
+                  Style="{StaticResource DataGridStyle}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  Margin="0,0,0,10">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название тура" 
+                                     Width="200"
+                                     Binding="{Binding TourName}"/>
+
+                <DataGridTextColumn Header="Страна" 
+                                     Width="120"
+                                     Binding="{Binding Country.CountryName}"/>
+
+                <DataGridTextColumn Header="Город" 
+                                     Width="120"
+                                     Binding="{Binding City.CityName}"/>
+
+                <DataGridTextColumn Header="Отель" 
+                                     Width="150"
+                                     Binding="{Binding Hotel.HotelName}"/>
+
+                <DataGridTextColumn Header="Звезд" 
+                                     Width="60"
+                                     Binding="{Binding Hotel.Stars}"/>
+
+                <DataGridTextColumn Header="Питание" 
+                                     Width="80"
+                                     Binding="{Binding Hotel.MealType.MealCode}"/>
+
+                <DataGridTextColumn Header="Вылет" 
+                                     Width="90"
+                                     Binding="{Binding DepartureDate, StringFormat={}{0:dd.MM.yyyy}}"/>
+
+                <DataGridTextColumn Header="Возвращение" 
+                                     Width="90"
+                                     Binding="{Binding ReturnDate, StringFormat={}{0:dd.MM.yyyy}}"/>
+
+                <DataGridTextColumn Header="Дней" 
+                                     Width="50"
+                                     Binding="{Binding DurationDays}"/>
+
+                <DataGridTextColumn Header="Цена" Width="90"
+                                    Binding="{Binding Price, StringFormat={}{0:N0} руб}"/>
+
+                <DataGridTextColumn Header="Мест" 
+                                     Width="50"
+                                     Binding="{Binding MaxTourists}"/>
+
+                <!-- Кнопка редактирования -->
+                <DataGridTemplateColumn Header="Действия" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="✏️" 
+                                        Width="30"
+                                        Background="#F39C12"
+                                        Foreground="White"
+                                        BorderThickness="0"
+                                        Margin="2"
+                                        Cursor="Hand"
+                                        Click="EditTourButton_Click"
+                                        Tag="{Binding TourId}"/>
+
+                                <Button Content="🗑️" 
+                                        Width="30"
+                                        Background="#E74C3C"
+                                        Foreground="White"
+                                        BorderThickness="0"
+                                        Margin="2"
+                                        Cursor="Hand"
+                                        Click="DeleteTourButton_Click"
+                                        Tag="{Binding TourId}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>

@@ -1,0 +1,87 @@
+﻿<Page x:Class="TurAgenstvo.Pages.HotelsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Отели"
+      Background="#ECF0F1"
+      Loaded="Page_Loaded">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Text="УПРАВЛЕНИЕ ОТЕЛЯМИ" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Foreground="#2C3E50"
+                   Grid.Row="0"
+                   Margin="0,0,0,20"/>
+
+        <!-- Панель кнопок -->
+        <StackPanel Orientation="Horizontal" 
+                    Grid.Row="1" 
+                    Margin="0,0,0,20">
+
+            <Button Content="Назад к турам" 
+                    Width="120" 
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BackButton_Click"/>
+
+            <Button Content="Добавить отель" 
+                    Width="120" 
+                    Height="35"
+                    Background="#27AE60"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="AddHotelButton_Click"/>
+        </StackPanel>
+
+        <!-- Таблица отелей -->
+        <DataGrid x:Name="HotelsGrid" 
+                  Grid.Row="2"
+                  Style="{StaticResource DataGridStyle}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название отеля" 
+                                     Width="200"
+                                     Binding="{Binding HotelName}"/>
+
+                <DataGridTextColumn Header="Город" 
+                                     Width="150"
+                                     Binding="{Binding City.CityName}"/>
+
+                <DataGridTextColumn Header="Страна" 
+                                     Width="120"
+                                     Binding="{Binding City.Country.CountryName}"/>
+
+                <DataGridTextColumn Header="Звезд" 
+                                     Width="60"
+                                     Binding="{Binding Stars}"/>
+
+                <DataGridTextColumn Header="Питание" 
+                                     Width="100"
+                                     Binding="{Binding MealType.MealName}"/>
+
+                <DataGridTextColumn Header="Телефон" 
+                                     Width="120"
+                                     Binding="{Binding Phone}"/>
+
+                <DataGridTextColumn Header="Email" 
+                                     Width="150"
+                                     Binding="{Binding Email}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>

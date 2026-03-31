@@ -1,0 +1,155 @@
+﻿<Page x:Class="TurAgenstvo.Pages.EmployeesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TurAgenstvo.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" d:DesignWidth="900"
+      Title="Сотрудники"
+      Background="#ECF0F1"
+      Loaded="Page_Loaded">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Text="УПРАВЛЕНИЕ СОТРУДНИКАМИ" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Foreground="#2C3E50"
+                   Grid.Row="0"
+                   Margin="0,0,0,20"/>
+
+        <!-- Панель кнопок -->
+        <StackPanel Orientation="Horizontal" 
+                    Grid.Row="1" 
+                    Margin="0,0,0,20">
+
+            <Button Content="На главную" 
+                    Width="120" 
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="BackButton_Click"/>
+
+            <Button Content="Добавить сотрудника" 
+                    Width="150" 
+                    Height="35"
+                    Background="#27AE60"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="AddEmployeeButton_Click"/>
+
+            <Button Content="Сохранить изменения" 
+                    Width="150" 
+                    Height="35"
+                    Margin="10,0,0,0"
+                    Background="#3498DB"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="SaveChangesButton_Click"/>
+        </StackPanel>
+
+        <!-- Таблица сотрудников -->
+        <DataGrid x:Name="EmployeesGrid" 
+                  Grid.Row="2"
+                  Style="{StaticResource DataGridStyle}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="False"
+                  SelectionMode="Single"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="True"
+                  RowEditEnding="EmployeesGrid_RowEditEnding"
+                  Margin="0,0,0,10">
+            
+
+            <DataGrid.Columns>
+                <!-- ID (скрытая колонка) -->
+                <DataGridTextColumn Header="EmployeeID" 
+                                     Binding="{Binding EmployeeID}"
+                                     Visibility="Collapsed"/>
+
+                <!-- Фамилия -->
+                <DataGridTextColumn Header="Фамилия" 
+                                     Width="120"
+                                     Binding="{Binding LastName}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.Margin" Value="5,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <!-- Имя -->
+                <DataGridTextColumn Header="Имя" 
+                                     Width="120"
+                                     Binding="{Binding FirstName}"/>
+
+                <!-- Отчество -->
+                <DataGridTextColumn Header="Отчество" 
+                                     Width="120"
+                                     Binding="{Binding MiddleName}"/>
+
+                <!-- Должность (ComboBox) -->
+                <DataGridComboBoxColumn Header="Должность" 
+                                         Width="130"
+                                         x:Name="PositionColumn"
+                                         SelectedItemBinding="{Binding Position}"
+                                         DisplayMemberPath="PositionName"/>
+
+                <!-- Логин -->
+                <DataGridTextColumn Header="Логин" 
+                                     Width="120"
+                                     Binding="{Binding Login}"/>
+
+                <!-- Пароль -->
+                <DataGridTextColumn Header="Пароль" 
+                                     Width="100"
+                                     Binding="{Binding Password}"/>
+
+                <!-- Email -->
+                <DataGridTextColumn Header="Email" 
+                                     Width="150"
+                                     Binding="{Binding Email}"/>
+
+                <!-- Телефон -->
+                <DataGridTextColumn Header="Телефон" 
+                                     Width="120"
+                                     Binding="{Binding Phone}"/>
+
+                <!-- Активен -->
+                <DataGridCheckBoxColumn Header="Активен" 
+                                         Width="70"
+                                         Binding="{Binding IsActive}"/>
+
+                <!-- Кнопка удаления -->
+                <DataGridTemplateColumn Header="Действия" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Удалить" 
+                                    Background="#E74C3C"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Padding="5,2"
+                                    FontSize="11"
+                                    Cursor="Hand"
+                                    Click="DeleteEmployeeButton_Click"
+                                    Tag="{Binding EmployeeID}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>

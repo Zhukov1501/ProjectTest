@@ -1,0 +1,159 @@
+<Page x:Class="TurAgenstvo.Pages.BookingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Бронирования"
+      Background="#ECF0F1"
+      Loaded="Page_Loaded">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Text="УПРАВЛЕНИЕ БРОНИРОВАНИЯМИ" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Foreground="#2C3E50"
+                   Grid.Row="0"
+                   Margin="0,0,0,20"/>
+
+        <!-- Панель кнопок -->
+        <StackPanel Orientation="Horizontal" 
+                    Grid.Row="1" 
+                    Margin="0,0,0,20">
+
+            <Button Content="Выйти" 
+                    Width="100" 
+                    Height="35"
+                    Background="#E74C3C"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="LogoutButton_Click"/>
+
+            <Button Content="Новое бронирование" 
+                    Width="150" 
+                    Height="35"
+                    Margin="10,0,0,0"
+                    Background="#27AE60"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="NewBookingButton_Click"/>
+        </StackPanel>
+
+        <!-- Фильтр по статусу -->
+        <StackPanel Orientation="Horizontal" 
+                    Grid.Row="2" 
+                    Margin="0,0,0,20">
+
+            <TextBlock Text="Фильтр по статусу:" 
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"/>
+
+            <ComboBox x:Name="StatusFilter" 
+                      Width="150"
+                      Height="30"
+                      SelectionChanged="StatusFilter_SelectionChanged">
+                <ComboBoxItem Content="Все" IsSelected="True"/>
+                <ComboBoxItem Content="Подтверждено"/>
+                <ComboBoxItem Content="Оплачено"/>
+                <ComboBoxItem Content="Отменено"/>
+            </ComboBox>
+        </StackPanel>
+
+        <!-- Таблица бронирований -->
+        <DataGrid x:Name="BookingsGrid" 
+                  Grid.Row="3"
+                  Style="{StaticResource DataGridStyle}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Номер брони" 
+                                     Width="120"
+                                     Binding="{Binding BookingNumber}"/>
+
+                <DataGridTextColumn Header="Клиент" 
+                                     Width="150"
+                                     Binding="{Binding Client.LastName}"/>
+
+                <DataGridTextColumn Header="Тур" 
+                                     Width="200"
+                                     Binding="{Binding Tour.TourName}"/>
+
+                <DataGridTextColumn Header="Дата брони" 
+                                     Width="100"
+                                     Binding="{Binding BookingDate, StringFormat={}{0:dd.MM.yyyy}}"/>
+
+                <DataGridTextColumn Header="Заезд" 
+                                     Width="90"
+                                     Binding="{Binding StartDate, StringFormat={}{0:dd.MM.yyyy}}"/>
+
+                <DataGridTextColumn Header="Выезд" 
+                                     Width="90"
+                                     Binding="{Binding EndDate, StringFormat={}{0:dd.MM.yyyy}}"/>
+
+                <DataGridTextColumn Header="Взрослые" 
+                                     Width="70"
+                                     Binding="{Binding AdultsCount}"/>
+
+                <DataGridTextColumn Header="Дети" 
+                                     Width="50"
+                                     Binding="{Binding ChildrenCount}"/>
+
+                <DataGridTextColumn Header="Питание" 
+                     Width="100"
+                     Binding="{Binding Tour.Hotel.MealType.MealName, TargetNullValue='Не указано'}"/>
+
+                <DataGridTextColumn Header="Сумма" 
+                     Width="100"
+                     Binding="{Binding TotalPrice, StringFormat={}{0:N0} ₽}"/>
+
+                <DataGridTextColumn Header="Статус"
+                                     Width="100"
+                                     Binding="{Binding Status}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="Оплачено">
+                                    <Setter Property="Foreground" Value="#27AE60"/>
+                                </Trigger>
+                                <Trigger Property="Text" Value="Подтверждено">
+                                    <Setter Property="Foreground" Value="#F39C12"/>
+                                </Trigger>
+                                <Trigger Property="Text" Value="Отменено">
+                                    <Setter Property="Foreground" Value="#E74C3C"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <!-- Кнопка оплаты -->
+                <DataGridTemplateColumn Header="Оплата" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Оплатить" 
+                                    Background="#F39C12"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Padding="5,2"
+                                    FontSize="11"
+                                    Cursor="Hand"
+                                    Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Подтверждено}"
+                                    Click="PayButton_Click"
+                                    Tag="{Binding BookingId}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>
