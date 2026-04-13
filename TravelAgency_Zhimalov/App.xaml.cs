@@ -1,0 +1,12 @@
+using System.Windows;
+using TravelAgencyApp.Views;
+
+namespace TravelAgencyApp;
+
+public partial class App : Application
+{
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+    }
+}
