@@ -71,17 +71,20 @@ public class DatabaseService
                 IsActive INTEGER DEFAULT 1
             );
 
-            CREATE TABLE IF NOT EXISTS AttractionServices (
+            CREATE TABLE IF NOT EXISTS Tours (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name TEXT NOT NULL,
                 Description TEXT,
-                Category TEXT,
+                Country TEXT,
+                City TEXT,
+                TourType TEXT,
                 Price REAL NOT NULL,
-                DurationMinutes INTEGER,
+                DurationDays INTEGER,
                 MaxParticipants INTEGER,
                 AvailableSlots INTEGER,
-                Location TEXT,
-                AgeRestriction TEXT DEFAULT '0+',
+                HotelName TEXT,
+                HotelStars TEXT DEFAULT '3*',
+                MealType TEXT DEFAULT 'Завтрак',
                 IsAvailable INTEGER DEFAULT 1,
                 CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
             );
@@ -89,16 +92,16 @@ public class DatabaseService
             CREATE TABLE IF NOT EXISTS Bookings (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 ClientId INTEGER NOT NULL,
-                ServiceId INTEGER NOT NULL,
+                TourId INTEGER NOT NULL,
                 BookingDate TEXT DEFAULT CURRENT_TIMESTAMP,
-                VisitDate TEXT NOT NULL,
+                DepartureDate TEXT NOT NULL,
                 ParticipantsCount INTEGER DEFAULT 1,
                 TotalPrice REAL,
-                Status TEXT DEFAULT 'Pending',
+                Status TEXT DEFAULT 'Ожидание',
                 Notes TEXT,
                 CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (ClientId) REFERENCES Clients(Id),
-                FOREIGN KEY (ServiceId) REFERENCES AttractionServices(Id)
+                FOREIGN KEY (TourId) REFERENCES Tours(Id)
             );
         ");
 
@@ -113,37 +116,35 @@ public class DatabaseService
 
         if (userExists == 0)
         {
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
             connection.Execute(@"
                 INSERT INTO Users (Username, PasswordHash, FullName, Role)
-                VALUES ('admin', @PasswordHash, 'Администратор', 'Admin'),
-                       ('manager', @ManagerHash, 'Менеджер', 'Manager'),
-                       ('user', @UserHash, 'Пользователь', 'User')",
+                VALUES ('admin', @AdminHash, 'Администратор', 'Admin'),
+                       ('manager', @ManagerHash, 'Менеджер', 'Менеджер'),
+                       ('user', @UserHash, 'Пользователь', 'Пользователь')",
                 new { 
-                    PasswordHash = passwordHash,
+                    AdminHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
                     ManagerHash = BCrypt.Net.BCrypt.HashPassword("manager123"),
                     UserHash = BCrypt.Net.BCrypt.HashPassword("user123")
                 });
         }
 
-        var serviceExists = connection.QueryFirstOrDefault<int>(
-            "SELECT COUNT(*) FROM AttractionServices");
-        
-        if (serviceExists == 0)
+        var tourExists = connection.QueryFirstOrDefault<int>("SELECT COUNT(*) FROM Tours");
+        if (tourExists == 0)
         {
             connection.Execute(@"
-                INSERT INTO AttractionServices (Name, Description, Category, Price, DurationMinutes, MaxParticipants, AvailableSlots, Location, AgeRestriction, IsAvailable)
-                VALUES 
-                    ('Колесо обозрения', 'Панорамный вид на город с высоты 65 метров', 'Развлечения', 500, 30, 8, 48, 'Центральная площадь', '6+', 1),
-                    ('Американские горки', 'Захватывающий аттракцион с резкими спусками', 'Экстрим', 800, 3, 24, 240, 'Зона A', '12+', 1),
-                    ('Карусель парковая', 'Классическая карусель для всей семьи', 'Семейные', 300, 10, 40, 200, 'Зона B', '3+', 1),
-                    ('Виртуальная реальность', 'Иммерсивные VR-приключения', 'Технологии', 1200, 45, 6, 30, 'Зона C', '8+', 1),
-                    ('Аквапарк', 'Водные горки и бассейны', 'Водные', 1500, 180, 100, 500, 'Водная зона', '5+', 1),
-                    ('Парк аттракционов', 'Комплекс из 15 аттракционов', 'Комплекс', 2500, 360, 200, 1000, 'Весь парк', '0+', 1),
-                    ('5D Кинотеатр', 'Иммерсивный фильм с эффектами', 'Кино', 400, 20, 50, 200, 'Зона D', '5+', 1),
-                    ('Лабиринт зеркальный', 'Забавный лабиринт из зеркал', 'Развлечения', 250, 15, 20, 100, 'Зона B', '3+', 1),
-                    ('Прыжки на батуте', 'Профессиональные батуты', 'Спорт', 600, 30, 15, 75, 'Спортивная зона', '6+', 1),
-                    ('Автодром', 'Электрические машинки для детей', 'Детские', 350, 15, 20, 120, 'Детская зона', '4+', 1)");            
+                INSERT INTO Tours (Name, Description, Country, City, TourType, Price, DurationDays, MaxParticipants, AvailableSlots, HotelName, HotelStars, MealType, IsAvailable) VALUES 
+                ('Отдых на Мальдивах', 'Райский отдых на белоснежных пляжах, кристально чистое море, снорклинг', 'Мальдиды', 'Мале', 'Пляжный', 250000, 10, 4, 8, 'Baros Maldives', '5*', 'Всё включено', 1),
+                ('Тур по Европе', 'Посещение Парижа, Рима и Барселоны с экскурсиями', 'Франция, Италия, Испания', 'Париж', 'Экскурсионный', 180000, 12, 20, 15, 'Hotel Europe', '4*', 'Завтрак', 1),
+                ('Горнолыжный курорт Андорра', 'Катание на лыжах в Пиренеях, спа и ночная жизнь', 'Андорра', 'Андорра-ла-Велья', 'Горнолыжный', 95000, 7, 10, 20, 'Sport Hotel Hermitage', '5*', 'Полупансион', 1),
+                ('Круиз по Средиземному морю', 'Путешествие на лайнере с остановками в Греции, Турции и Кипре', 'Греция', 'Афины', 'Круиз', 320000, 14, 6, 12, 'MSC Fantasia', '5*', 'Всё включено', 1),
+                ('Таиланд - Пхукет', 'Пляжный отдых, слоны, храмы, ночные рынки', 'Таиланд', 'Пхукет', 'Пляжный', 120000, 14, 8, 25, 'The Pavilions Phuket', '5*', 'Завтрак', 1),
+                ('Япония - Страна восходящего солнца', 'Токио, Киото, Хиросима, гора Фудзи', 'Япония', 'Токио', 'Экскурсионный', 280000, 10, 15, 10, 'Imperial Hotel Tokyo', '5*', 'Завтрак', 1),
+                ('ОАЭ - Дубай', 'Шопинг, пляжи, пустыня, небоскрёбы', 'ОАЭ', 'Дубай', 'Пляжный', 150000, 7, 6, 30, 'Burj Al Arab', '5*', 'Завтрак', 1),
+                ('Италия - Рим и Флоренция', 'Колизей, Ватикан, гастрономический тур', 'Италия', 'Рим', 'Экскурсионный', 140000, 8, 12, 18, 'Hotel de Russie', '5*', 'Завтрак', 1),
+                ('Бали - Индонезия', 'Йога, храмы, рисовые террасы, вулканы', 'Индонезия', 'Денпасар', 'Оздоровительный', 110000, 12, 8, 15, 'Four Seasons Bali', '5*', 'Полупансион', 1),
+                ('Сейшелы', 'Уединённый отдых на островах, дайвинг', 'Сейшелы', 'Виктория', 'Пляжный', 380000, 10, 4, 6, 'Four Seasons Seychelles', '5*', 'Всё включено', 1),
+                ('Черногория - Будва', 'Адриатическое побережье, старый город, горы', 'Черногория', 'Будва', 'Пляжный', 75000, 10, 10, 22, 'Avala Resort', '4*', 'Завтрак', 1),
+                ('Швейцария - Цюрих', 'Горные экскурсии, шоколад, часы', 'Швейцария', 'Цюрих', 'Горнолыжный', 200000, 7, 8, 12, 'The Dolder Grand', '5*', 'Завтрак', 1)");
         }
 
         var clientExists = connection.QueryFirstOrDefault<int>("SELECT COUNT(*) FROM Clients");
@@ -154,10 +155,10 @@ public class DatabaseService
                 ('Иван', 'Петров', 'Сергеевич', '1234 567890', '+7 999 123-45-67', 'ivan.petrov@mail.ru', '1990-05-15', 'г. Москва, ул. Ленина, д. 10', 'Постоянный клиент'),
                 ('Мария', 'Сидорова', 'Александровна', '2345 678901', '+7 999 234-56-78', 'maria.sidorova@mail.ru', '1985-03-22', 'г. Москва, ул. Пушкина, д. 5', 'VIP клиент'),
                 ('Алексей', 'Козлов', 'Дмитриевич', '3456 789012', '+7 999 345-67-89', 'alexey.kozlov@mail.ru', '1995-08-10', 'г. Москва, пр. Мира, д. 15', ''),
-                ('Елена', 'Новикова', 'Игоревна', '4567 890123', '+7 999 456-78-90', 'elena.novikova@mail.ru', '1988-12-01', 'г. Москва, ул. Гагарина, д. 20', 'Предпочитает водные развлечения'),
+                ('Елена', 'Новикова', 'Игоревна', '4567 890123', '+7 999 456-78-90', 'elena.novikova@mail.ru', '1988-12-01', 'г. Москва, ул. Гагарина, д. 20', 'Предпочитает пляжный отдых'),
                 ('Дмитрий', 'Морозов', 'Владимирович', '5678 901234', '+7 999 567-89-01', 'dmitry.morozov@mail.ru', '1992-07-25', 'г. Москва, ул. Чехова, д. 8', ''),
                 ('Ольга', 'Волкова', 'Петровна', '6789 012345', '+7 999 678-90-12', 'olga.volkova@mail.ru', '1987-11-30', 'г. Москва, ул. Толстого, д. 12', ''),
-                ('Сергей', 'Лебедев', 'Андреевич', '7890 123456', '+7 999 789-01-23', 'sergey.lebedev@mail.ru', '1993-04-18', 'г. Москва, ул. Некрасова, д. 7', 'Любит экстрим'),
+                ('Сергей', 'Лебедев', 'Андреевич', '7890 123456', '+7 999 789-01-23', 'sergey.lebedev@mail.ru', '1993-04-18', 'г. Москва, ул. Некрасова, д. 7', 'Любит экскурсионные туры'),
                 ('Анна', 'Кузнецова', 'Михайловна', '8901 234567', '+7 999 890-12-34', 'anna.kuznetsova@mail.ru', '1991-09-05', 'г. Москва, ул. Гоголя, д. 3', ''),
                 ('Николай', 'Соловьев', 'Викторович', '9012 345678', '+7 999 901-23-45', 'nikolay.solovyev@mail.ru', '1989-02-14', 'г. Москва, ул. Островского, д. 9', ''),
                 ('Татьяна', 'Васильева', 'Николаевна', '1111 222233', '+7 999 111-22-33', 'tatiana.vasilieva@mail.ru', '1994-06-22', 'г. Москва, ул. Тургенева, д. 14', ''),
@@ -257,23 +258,30 @@ public class DatabaseService
         connection.Execute("UPDATE Clients SET IsActive = 0 WHERE Id = @Id", new { Id = id });
     }
 
-    public IEnumerable<AttractionService> GetServices(string? search = null, string? category = null, 
-        string? sortBy = null, bool ascending = true, decimal? minPrice = null, decimal? maxPrice = null)
+    public IEnumerable<Tour> GetTours(string? search = null, string? tourType = null, 
+        string? country = null, string? sortBy = null, bool ascending = true, 
+        decimal? minPrice = null, decimal? maxPrice = null)
     {
         using var connection = GetConnection();
-        var sql = "SELECT * FROM AttractionServices WHERE IsAvailable = 1";
+        var sql = "SELECT * FROM Tours WHERE IsAvailable = 1";
         var parameters = new DynamicParameters();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            sql += @" AND (Name LIKE @Search OR Description LIKE @Search OR Location LIKE @Search)";
+            sql += @" AND (Name LIKE @Search OR Description LIKE @Search OR Country LIKE @Search OR City LIKE @Search OR HotelName LIKE @Search)";
             parameters.Add("Search", $"%{search}%");
         }
 
-        if (!string.IsNullOrWhiteSpace(category))
+        if (!string.IsNullOrWhiteSpace(tourType))
         {
-            sql += " AND Category = @Category";
-            parameters.Add("Category", category);
+            sql += " AND TourType = @TourType";
+            parameters.Add("TourType", tourType);
+        }
+
+        if (!string.IsNullOrWhiteSpace(country))
+        {
+            sql += " AND Country LIKE @Country";
+            parameters.Add("Country", $"%{country}%");
         }
 
         if (minPrice.HasValue)
@@ -292,54 +300,62 @@ public class DatabaseService
         {
             "Название" => " ORDER BY Name",
             "Цена" => " ORDER BY Price",
-            "Длительность" => " ORDER BY DurationMinutes",
-            "Категория" => " ORDER BY Category",
+            "Страна" => " ORDER BY Country",
+            "Тип тура" => " ORDER BY TourType",
+            "Длительность" => " ORDER BY DurationDays",
             _ => " ORDER BY Id"
         };
 
         sql += ascending ? " ASC" : " DESC";
 
-        return connection.Query<AttractionService>(sql, parameters);
+        return connection.Query<Tour>(sql, parameters);
     }
 
-    public IEnumerable<string> GetCategories()
+    public IEnumerable<string> GetTourTypes()
     {
         using var connection = GetConnection();
-        return connection.Query<string>("SELECT DISTINCT Category FROM AttractionServices WHERE IsAvailable = 1 ORDER BY Category");
+        return connection.Query<string>("SELECT DISTINCT TourType FROM Tours WHERE IsAvailable = 1 ORDER BY TourType");
     }
 
-    public AttractionService? GetServiceById(int id)
+    public IEnumerable<string> GetCountries()
     {
         using var connection = GetConnection();
-        return connection.QueryFirstOrDefault<AttractionService>(
-            "SELECT * FROM AttractionServices WHERE Id = @Id", new { Id = id });
+        return connection.Query<string>("SELECT DISTINCT Country FROM Tours WHERE IsAvailable = 1 ORDER BY Country");
     }
 
-    public int AddService(AttractionService service)
+    public Tour? GetTourById(int id)
+    {
+        using var connection = GetConnection();
+        return connection.QueryFirstOrDefault<Tour>(
+            "SELECT * FROM Tours WHERE Id = @Id", new { Id = id });
+    }
+
+    public int AddTour(Tour tour)
     {
         using var connection = GetConnection();
         return connection.ExecuteScalar<int>(@"
-            INSERT INTO AttractionServices (Name, Description, Category, Price, DurationMinutes, MaxParticipants, AvailableSlots, Location, AgeRestriction, IsAvailable)
-            VALUES (@Name, @Description, @Category, @Price, @DurationMinutes, @MaxParticipants, @AvailableSlots, @Location, @AgeRestriction, @IsAvailable);
-            SELECT last_insert_rowid();", service);
+            INSERT INTO Tours (Name, Description, Country, City, TourType, Price, DurationDays, MaxParticipants, AvailableSlots, HotelName, HotelStars, MealType, IsAvailable)
+            VALUES (@Name, @Description, @Country, @City, @TourType, @Price, @DurationDays, @MaxParticipants, @AvailableSlots, @HotelName, @HotelStars, @MealType, @IsAvailable);
+            SELECT last_insert_rowid();", tour);
     }
 
-    public void UpdateService(AttractionService service)
+    public void UpdateTour(Tour tour)
     {
         using var connection = GetConnection();
         connection.Execute(@"
-            UPDATE AttractionServices SET 
-                Name = @Name, Description = @Description, Category = @Category,
-                Price = @Price, DurationMinutes = @DurationMinutes, MaxParticipants = @MaxParticipants,
-                AvailableSlots = @AvailableSlots, Location = @Location, AgeRestriction = @AgeRestriction,
+            UPDATE Tours SET 
+                Name = @Name, Description = @Description, Country = @Country, City = @City,
+                TourType = @TourType, Price = @Price, DurationDays = @DurationDays,
+                MaxParticipants = @MaxParticipants, AvailableSlots = @AvailableSlots,
+                HotelName = @HotelName, HotelStars = @HotelStars, MealType = @MealType,
                 IsAvailable = @IsAvailable
-            WHERE Id = @Id", service);
+            WHERE Id = @Id", tour);
     }
 
-    public void DeleteService(int id)
+    public void DeleteTour(int id)
     {
         using var connection = GetConnection();
-        connection.Execute("UPDATE AttractionServices SET IsAvailable = 0 WHERE Id = @Id", new { Id = id });
+        connection.Execute("UPDATE Tours SET IsAvailable = 0 WHERE Id = @Id", new { Id = id });
     }
 
     public IEnumerable<Booking> GetBookings(int? clientId = null)
@@ -347,10 +363,10 @@ public class DatabaseService
         using var connection = GetConnection();
         var sql = @"
             SELECT b.*, c.FirstName, c.LastName, c.MiddleName, 
-                   s.Name as ServiceName
+                   t.Name as TourName
             FROM Bookings b
             LEFT JOIN Clients c ON b.ClientId = c.Id
-            LEFT JOIN AttractionServices s ON b.ServiceId = s.Id
+            LEFT JOIN Tours t ON b.TourId = t.Id
             WHERE 1=1";
 
         if (clientId.HasValue)

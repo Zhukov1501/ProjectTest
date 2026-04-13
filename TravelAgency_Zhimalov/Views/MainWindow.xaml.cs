@@ -32,8 +32,9 @@ public partial class MainWindow : Window
         dgServices.IsReadOnly = !canEdit;
         
         LoadClients();
-        LoadServices();
-        LoadCategories();
+        LoadTours();
+        LoadTourTypes();
+        LoadCountries();
     }
 
     private void btnLogout_Click(object sender, RoutedEventArgs e)
@@ -56,13 +57,16 @@ public partial class MainWindow : Window
         dgClients.ItemsSource = clients;
     }
 
-    private void LoadServices()
+    private void LoadTours()
     {
         if (dgServices == null) return;
         
         string? search = string.IsNullOrWhiteSpace(txtServiceSearch.Text) ? null : txtServiceSearch.Text;
-        string? category = (cmbCategory.SelectedItem as ComboBoxItem)?.Content?.ToString();
-        if (category == "Все категории") category = null;
+        string? tourType = (cmbTourType.SelectedItem as ComboBoxItem)?.Content?.ToString();
+        if (tourType == "Все типы") tourType = null;
+        
+        string? country = (cmbCountry.SelectedItem as ComboBoxItem)?.Content?.ToString();
+        if (country == "Все страны") country = null;
         
         string? sortBy = (cmbServiceSort.SelectedItem as ComboBoxItem)?.Content?.ToString();
         bool ascending = chkServiceAsc?.IsChecked == true;
@@ -75,20 +79,32 @@ public partial class MainWindow : Window
         if (decimal.TryParse(txtMaxPrice.Text, out var max))
             maxPrice = max;
 
-        var services = _db.GetServices(search, category, sortBy, ascending, minPrice, maxPrice);
-        dgServices.ItemsSource = services;
+        var tours = _db.GetTours(search, tourType, country, sortBy, ascending, minPrice, maxPrice);
+        dgServices.ItemsSource = tours;
     }
 
-    private void LoadCategories()
+    private void LoadTourTypes()
     {
-        var categories = _db.GetCategories().ToList();
-        cmbCategory.Items.Clear();
-        cmbCategory.Items.Add(new ComboBoxItem { Content = "Все категории" });
-        foreach (var category in categories)
+        var tourTypes = _db.GetTourTypes().ToList();
+        cmbTourType.Items.Clear();
+        cmbTourType.Items.Add(new ComboBoxItem { Content = "Все типы" });
+        foreach (var type in tourTypes)
         {
-            cmbCategory.Items.Add(new ComboBoxItem { Content = category });
+            cmbTourType.Items.Add(new ComboBoxItem { Content = type });
         }
-        cmbCategory.SelectedIndex = 0;
+        cmbTourType.SelectedIndex = 0;
+    }
+
+    private void LoadCountries()
+    {
+        var countries = _db.GetCountries().ToList();
+        cmbCountry.Items.Clear();
+        cmbCountry.Items.Add(new ComboBoxItem { Content = "Все страны" });
+        foreach (var country in countries)
+        {
+            cmbCountry.Items.Add(new ComboBoxItem { Content = country });
+        }
+        cmbCountry.SelectedIndex = 0;
     }
 
     private void txtClientSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -108,27 +124,32 @@ public partial class MainWindow : Window
 
     private void txtServiceSearch_TextChanged(object sender, TextChangedEventArgs e)
     {
-        LoadServices();
+        LoadTours();
     }
 
-    private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void cmbTourType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        LoadServices();
+        LoadTours();
+    }
+
+    private void cmbCountry_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        LoadTours();
     }
 
     private void cmbServiceSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        LoadServices();
+        LoadTours();
     }
 
     private void chkServiceSort_Changed(object sender, RoutedEventArgs e)
     {
-        LoadServices();
+        LoadTours();
     }
 
     private void txtPrice_TextChanged(object sender, TextChangedEventArgs e)
     {
-        LoadServices();
+        LoadTours();
     }
 
     private void dgClients_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -154,24 +175,26 @@ public partial class MainWindow : Window
 
     private void dgServices_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (dgServices.SelectedItem is AttractionService service)
+        if (dgServices.SelectedItem is Tour tour)
         {
-            var editWindow = new ServiceEditWindow(service);
+            var editWindow = new TourEditWindow(tour);
             if (editWindow.ShowDialog() == true)
             {
-                LoadServices();
-                LoadCategories();
+                LoadTours();
+                LoadTourTypes();
+                LoadCountries();
             }
         }
     }
 
-    private void btnAddService_Click(object sender, RoutedEventArgs e)
+    private void btnAddTour_Click(object sender, RoutedEventArgs e)
     {
-        var editWindow = new ServiceEditWindow(null);
+        var editWindow = new TourEditWindow(null);
         if (editWindow.ShowDialog() == true)
         {
-            LoadServices();
-            LoadCategories();
+            LoadTours();
+            LoadTourTypes();
+            LoadCountries();
         }
     }
 }

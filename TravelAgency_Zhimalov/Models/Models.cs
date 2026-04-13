@@ -31,18 +31,21 @@ public class Client
     public string FullName => $"{LastName} {FirstName} {MiddleName}".Trim();
 }
 
-public class AttractionService
+public class Tour
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public string Category { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string TourType { get; set; } = string.Empty;
     public decimal Price { get; set; }
-    public int DurationMinutes { get; set; }
+    public int DurationDays { get; set; }
     public int MaxParticipants { get; set; }
     public int AvailableSlots { get; set; }
-    public string Location { get; set; } = string.Empty;
-    public string AgeRestriction { get; set; } = "0+";
+    public string HotelName { get; set; } = string.Empty;
+    public string HotelStars { get; set; } = "3*";
+    public string MealType { get; set; } = "Завтрак";
     public bool IsAvailable { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 }
@@ -51,15 +54,15 @@ public class Booking
 {
     public int Id { get; set; }
     public int ClientId { get; set; }
-    public int ServiceId { get; set; }
+    public int TourId { get; set; }
     public DateTime BookingDate { get; set; }
-    public DateTime VisitDate { get; set; }
+    public DateTime DepartureDate { get; set; }
     public int ParticipantsCount { get; set; }
     public decimal TotalPrice { get; set; }
-    public string Status { get; set; } = "Pending";
+    public string Status { get; set; } = "Ожидание";
     public string Notes { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public Client? Client { get; set; }
-    public AttractionService? Service { get; set; }
+    public Tour? Tour { get; set; }
 }
